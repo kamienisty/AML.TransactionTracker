@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  aml.transactiontracker.api:
+    image: ${DOCKER_REGISTRY-}amltransactiontrackerapi
+    build:
+      context: .
+      dockerfile: AML.TransactionTracker.API/Dockerfile
+    ports:
+        - 8080:8080
+        - 8081:8081
+    networks:
+      - services-network
+    volumes:
+        - "./database:/database"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq-tt'
+    hostname: "rabbitmqhost"
+    ports:
+        - 5672:5672
+        - 15672:15672
+    networks:
+      - services-network
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+networks:
+  services-network:
