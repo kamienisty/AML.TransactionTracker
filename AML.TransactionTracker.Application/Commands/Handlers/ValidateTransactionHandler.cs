@@ -1,6 +1,8 @@
 ﻿using AML.TransactionTracker.Application.Exceptions;
+using AML.TransactionTracker.Core.Entities;
 using AML.TransactionTracker.Core.Repositories;
 using MediatR;
+using System.Linq;
 
 namespace AML.TransactionTracker.Application.Commands.Handlers
 {
@@ -31,11 +33,19 @@ namespace AML.TransactionTracker.Application.Commands.Handlers
                     var re = new RulesEngine.RulesEngine(workflow.ToArray(), null);
                     var resultList = await re.ExecuteAllRulesAsync(ValidationWorkflowName, transaction, _repository);
 
-                    if (resultList.Any(x => !x.IsSuccess))
+                    if (resultList.Exists(x => !x.IsSuccess))
                     {
                         var errors = string.Join(',', resultList.Where(x => !x.IsSuccess).Select(x => x.ExceptionMessage));
                         transaction.FlaggedReason = errors;
                         transaction.Flagged = true;
+
+                        var ruleViolations = new List<RuleViolation>();
+                        var date = DateTime.Now;
+
+                        ruleViolations.AddRange(resultList.Where(x => !x.IsSuccess)
+                            .Select(y => new RuleViolation(transaction.Id, y.Rule.RuleName, date, y.Rule.Expression)));
+
+                        await _repository.AddRuleViolationsAsync(ruleViolations);
                     }
                 }
 

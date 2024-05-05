@@ -153,10 +153,11 @@ namespace AML.TransactionTracker.ApplicationTests.Commands.Handlers
                         !x.Flagged &&
                         string.IsNullOrEmpty(x.FlaggedReason))),
                 Times.Once);
+            _repositoryMock.Verify(x => x.AddRuleViolationsAsync(It.IsAny<IEnumerable<RuleViolation>>()), Times.Never);
         }
 
         [Test]
-        public async Task Handle_MarksTransactionIsFlagged_WhenRulesFail()
+        public async Task Handle_MarksTransactionAsFlagged_WhenRulesFail()
         {
             var id = Guid.Parse("b7e8e8d7-38f3-4599-b98c-9703cd2d0da3");
 
@@ -196,6 +197,7 @@ namespace AML.TransactionTracker.ApplicationTests.Commands.Handlers
                         x.Flagged &&
                         x.FlaggedReason == "error")),
                 Times.Once);
+            _repositoryMock.Verify(x => x.AddRuleViolationsAsync(It.Is<IEnumerable<RuleViolation>>(y => y.Count() == 1)), Times.Once);
         }
 
         [Test]
@@ -251,6 +253,7 @@ namespace AML.TransactionTracker.ApplicationTests.Commands.Handlers
                         x.Flagged &&
                         x.FlaggedReason == "error1,error2")),
                 Times.Once);
+            _repositoryMock.Verify(x => x.AddRuleViolationsAsync(It.Is<IEnumerable<RuleViolation>>(y => y.Count() == 2)), Times.Once);
         }
     }
 }

@@ -14,8 +14,8 @@ namespace AML.TransactionTracker.Infrastructure.SQLite
         public DbSet<CurrencyLookup> Currencies { get; set; }
         public DbSet<TransactionTypeLookup> TransactionTypes { get; set; }
         public virtual DbSet<Workflow> Workflows { get; set; }
-
         public DbSet<Rule> Rules { get; set; }
+        public virtual DbSet<RuleViolation> RuleViolations { get; set; }
 
         public SQLiteContext(DbContextOptions<SQLiteContext> options) : base(options)
         {
@@ -113,6 +113,16 @@ namespace AML.TransactionTracker.Infrastructure.SQLite
 
                 entity.Ignore(b => b.WorkflowsToInject);
             });
+
+            modelBuilder.Entity<RuleViolation>().HasKey(k => k.Id);
+            modelBuilder.Entity<RuleViolation>().Property(p => p.TransactionId)
+                .IsRequired();
+            modelBuilder.Entity<RuleViolation>().Property(p => p.RuleName)
+                .IsRequired();
+            modelBuilder.Entity<RuleViolation>().Property(p => p.Date)
+                .IsRequired();
+            modelBuilder.Entity<RuleViolation>().Property(p => p.RuleExpression)
+                .IsRequired();
 
             base.OnModelCreating(modelBuilder);
         }

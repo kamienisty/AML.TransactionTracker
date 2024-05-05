@@ -73,5 +73,11 @@ namespace AML.TransactionTracker.Infrastructure.SQLite.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task AddRuleViolationsAsync(IEnumerable<RuleViolation> ruleViolations)
+        {
+            await _context.RuleViolations.AddRangeAsync(ruleViolations);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -15,5 +15,6 @@ namespace AML.TransactionTracker.Core.Repositories
         Task FlagTransactionAsync(Guid id);
         Task<IEnumerable<Workflow>> GetRulesForTransactionAsync(string name);
         Task<int> GetNumberOfTransactionsSinceDate(DateTime date, Guid customerId);
+        Task AddRuleViolationsAsync(IEnumerable<RuleViolation> ruleViolations);
     }
 }

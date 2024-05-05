@@ -5,6 +5,7 @@ using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Moq;
+using RulesEngine.Exceptions;
 using RulesEngine.Models;
 using static AML.TransactionTracker.Core.Enums.EnumsCore;
 
@@ -293,6 +294,26 @@ namespace AML.TransactionTracker.Infrastructure.Tests.Repositories
             var result = await repo.GetRulesForTransactionAsync("workflow1");
 
             Assert.IsTrue(result.Count() == 0);
+        }
+
+        [Test]
+        public async Task AddRuleViolationsAsync_CallsCorrectMethod_WhenUsed()
+        {
+            var data = new List<RuleViolation>();
+
+            var mockSet = data.AsQueryable().BuildMockDbSet();
+            _context.Setup(x => x.RuleViolations).Returns(mockSet.Object);
+            var repo = new TransactionSQLiteRepository(_context.Object);
+
+            var input = new List<RuleViolation> {
+                new RuleViolation(Guid.Parse("b7e8e8d7-38f3-4599-b98c-9703cd2d0111"), "rule1", DateTime.Now, "expression")
+            };
+
+            await repo.AddRuleViolationsAsync(input);
+
+            _context.Verify(x => x.RuleViolations.AddRangeAsync(It.IsAny<IEnumerable<RuleViolation>>(), It.IsAny<CancellationToken>()), 
+                Times.Once);
+            _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
