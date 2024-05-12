@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AML.TransactionTracker\AML.TransactionTracker.Core.csproj" />
+    <ProjectReference Include="..\AML.TransactionTracker.Core\AML.TransactionTracker.Core.csproj" />
   </ItemGroup>
 
 </Project>

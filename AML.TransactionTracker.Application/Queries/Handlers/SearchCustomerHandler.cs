@@ -3,9 +3,6 @@ using AML.TransactionTracker.Core.Entities;
 using AML.TransactionTracker.Core.Model;
 using AML.TransactionTracker.Core.Repositories;
 using MediatR;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Linq;
 
 namespace AML.TransactionTracker.Application.Queries.Handlers
 {
